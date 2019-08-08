@@ -3,9 +3,8 @@ package dockercntrl
 type Container struct {
   ID            string     `json:"Id"`
   State         *State
-  Status        Status
   Names         []string
-  Configuration *Configuration
+  Configuration *Config
   Image         string
   Command       string
 }
