@@ -73,7 +73,7 @@ func (c *Captain) Write(conn *websocket.Conn, done chan struct{}) {
 func RunConfig(config *dockercntrl.Config) {
   state, _ := dockercntrl.New()
   go func() {
-    container, err := state.Create(&config)
+    container, err := state.Create(config)
     if err != nil {
       log.Println(err)
       return
