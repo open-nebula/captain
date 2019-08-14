@@ -7,6 +7,7 @@ import (
   "github.com/docker/docker/api/types/filters"
   "github.com/docker/docker/api/types/container"
   "bytes"
+  "strings"
 )
 
 type State struct {
@@ -36,7 +37,7 @@ func (s *State) create(configuration *Config) (*Container, error) {
   config, hostConfig, err := configuration.convert()
   if err != nil {return nil, err}
 
-  resp, err := s.Client.ContainerCreate(s.Context, config, hostConfig, nil, config.Name)
+  resp, err := s.Client.ContainerCreate(s.Context, config, hostConfig, nil, configuration.Name)
   if err != nil {return nil, err}
 
   return &Container{ID: resp.ID, State: s}, nil
