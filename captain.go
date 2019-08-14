@@ -11,7 +11,7 @@ type Captain struct {
 
 func New() *Captain {
   return &Captain{
-    exit: make(chan struct{})
+    exit: make(chan struct{}),
   }
 }
 
