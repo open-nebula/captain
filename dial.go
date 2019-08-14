@@ -29,7 +29,7 @@ func (c *Captain) Read(conn *websocket.Conn, done chan struct{}) {
       conn.Close()
       close(done)
     }()
-    state, _ := dockercntrl.New()
+    // state, _ := dockercntrl.New()
     for {
       var config dockercntrl.Config
       err := conn.ReadJSON(&config)
