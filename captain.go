@@ -22,6 +22,6 @@ func (c *Captain) Run() {
     return
   }
   select {
-  case <- exit:
+  case <- c.exit:
   }
 }

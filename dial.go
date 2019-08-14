@@ -11,9 +11,9 @@ import (
 )
 
 func (c *Captain) Dial() error {
-  url := "localhost:8080"
+  dialurl, _ := url.ParseRequestURI("localhost:8080")
 
-  conn, _, err := websocket.DefaultDialer.Dial(url.String(), nil)
+  conn, _, err := websocket.DefaultDialer.Dial(dialurl.String(), nil)
   if err != nil {
     return err
   }
@@ -29,7 +29,7 @@ func (c *Captain) Read(conn *websocket.Conn, done chan struct{}) {
       conn.Close()
       close(done)
     }()
-    state := dockercntrl.New()
+    state, _ := dockercntrl.New()
     for {
       var config dockercntrl.Config
       err := conn.ReadJSON(&config)
@@ -71,6 +71,7 @@ func (c *Captain) Write(conn *websocket.Conn, done chan struct{}) {
 }
 
 func RunConfig(config *dockercntrl.Config) {
+  state, _ := dockercntrl.New()
   go func() {
     container, err := state.create(&config)
     if err != nil {
