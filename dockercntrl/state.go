@@ -21,7 +21,7 @@ func New() (*State, error) {
   return &State{Context: ctx, Client: cli}, err
 }
 
-func (s *State) pull(config *Config) (*string, error) {
+func (s *State) Pull(config *Config) (*string, error) {
   reader, err := s.Client.ImagePull(s.Context, config.Image, types.ImagePullOptions{})
   if err != nil {
     return nil, err
@@ -32,8 +32,8 @@ func (s *State) pull(config *Config) (*string, error) {
   return &logs, err
 }
 
-func (s *State) create(configuration *Config) (*Container, error) {
-  if _, err := s.pull(configuration); err != nil {return nil, err}
+func (s *State) Create(configuration *Config) (*Container, error) {
+  if _, err := s.Pull(configuration); err != nil {return nil, err}
   config, hostConfig, err := configuration.convert()
   if err != nil {return nil, err}
 
@@ -43,7 +43,7 @@ func (s *State) create(configuration *Config) (*Container, error) {
   return &Container{ID: resp.ID, State: s}, nil
 }
 
-func (s *State) run(c *Container) (*string, error) {
+func (s *State) Run(c *Container) (*string, error) {
   if err := s.Client.ContainerStart(s.Context, c.ID, types.ContainerStartOptions{}); err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (s *State) run(c *Container) (*string, error) {
   return &logs, nil
 }
 
-func (s *State) list() ([]*Container, error) {
+func (s *State) List() ([]*Container, error) {
   result := []*Container{}
   nebulaFilter := filters.NewArgs()
   nebulaFilter.Add("label", "nebula-task")
@@ -90,7 +90,7 @@ func (s *State) list() ([]*Container, error) {
   return result, nil
 }
 
-func (s *State) kill(cont *Container) error {
+func (s *State) Kill(cont *Container) error {
   // Sends SIGTERM followed by SIGKILL after a graceperio
   // Change last value from nil to give custom graceperiod
   err := s.Client.ContainerStop(s.Context, cont.ID, nil)
@@ -101,7 +101,7 @@ func (s *State) kill(cont *Container) error {
   return nil
 }
 
-func (s *State) remove(cont *Container) error {
+func (s *State) Remove(cont *Container) error {
   err := s.Client.ContainerRemove(s.Context, cont.ID, types.ContainerRemoveOptions{
     RemoveVolumes: false,
     RemoveLinks: false,
