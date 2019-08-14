@@ -21,7 +21,7 @@ func New() (*State, error) {
 }
 
 func (s *State) pull(config *Config) (*string, error) {
-  reader, err := state.Client.ImagePull(s.Context, config.Image, types.ImagePullOptions{})
+  reader, err := s.Client.ImagePull(s.Context, config.Image, types.ImagePullOptions{})
   if err != nil {
     return nil, err
   }
@@ -31,15 +31,15 @@ func (s *State) pull(config *Config) (*string, error) {
   return &logs, err
 }
 
-func (s *State) create(config *Config) (*Container, error) {
-  if _, err := s.pull(config); err != nil {return nil, err}
-  config, hostConfig, err := config.convert()
+func (s *State) create(configuration *Config) (*Container, error) {
+  if _, err := s.pull(configuration); err != nil {return nil, err}
+  config, hostConfig, err := configuration.convert()
   if err != nil {return nil, err}
 
-  resp, err := state.Client.ContainerCreate(s.Context, config, hostConfig, nil, config.Name)
+  resp, err := s.Client.ContainerCreate(s.Context, config, hostConfig, nil, config.Name)
   if err != nil {return nil, err}
 
-  return &Container{ID: resp.ID, State: state}, nil
+  return &Container{ID: resp.ID, State: s}, nil
 }
 
 func (s *State) run(c *Container) (*string, error) {
