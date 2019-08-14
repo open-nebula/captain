@@ -1,7 +1,7 @@
 package captain
 
 import (
-  "github.com/open-nebula/captain/dockercntrl"
+  // "github.com/open-nebula/captain/dockercntrl"
   "log"
 )
 

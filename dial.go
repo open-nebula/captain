@@ -11,7 +11,7 @@ import (
 )
 
 func (c *Captain) Dial() error {
-  url := ...
+  url := "localhost:8080"
 
   conn, _, err := websocket.DefaultDialer.Dial(url.String(), nil)
   if err != nil {
@@ -49,7 +49,7 @@ func (c *Captain) Write(conn *websocket.Conn, done chan struct{}) {
     defer func() {
       conn.Close()
       close(c.exit)
-    }
+    }()
     for {
       select {
       case <- done:
@@ -62,7 +62,7 @@ func (c *Captain) Write(conn *websocket.Conn, done chan struct{}) {
         }
         select {
         case <- done:
-        case <- time.After(4*time.Second)
+        case <- time.After(4*time.Second):
         }
         return
       }
