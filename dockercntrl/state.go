@@ -10,17 +10,20 @@ import (
   "strings"
 )
 
+// State holds the structs required to manipulate the docker daemon
 type State struct {
   Context context.Context
-  Client *client.Client
+  Client  *client.Client
 }
 
+// Construct a new State
 func New() (*State, error) {
   ctx := context.Background()
   cli, err := client.NewClientWithOpts(client.WithVersion("1.39"))
   return &State{Context: ctx, Client: cli}, err
 }
 
+// Pull pulls the associated image into cache
 func (s *State) Pull(config *Config) (*string, error) {
   reader, err := s.Client.ImagePull(s.Context, config.Image, types.ImagePullOptions{})
   if err != nil {
@@ -32,6 +35,7 @@ func (s *State) Pull(config *Config) (*string, error) {
   return &logs, err
 }
 
+// Create builds a docker container
 func (s *State) Create(configuration *Config) (*Container, error) {
   if _, err := s.Pull(configuration); err != nil {return nil, err}
   config, hostConfig, err := configuration.convert()
@@ -43,6 +47,8 @@ func (s *State) Create(configuration *Config) (*Container, error) {
   return &Container{ID: resp.ID, State: s}, nil
 }
 
+// Run runs a built docker container. It follows the execution to display
+// logs at the end of execution.
 func (s *State) Run(c *Container) (*string, error) {
   if err := s.Client.ContainerStart(s.Context, c.ID, types.ContainerStartOptions{}); err != nil {
 		return nil, err
@@ -66,6 +72,8 @@ func (s *State) Run(c *Container) (*string, error) {
   return &logs, nil
 }
 
+// List returns all nebula-specific docker containers, determined by
+// docker label
 func (s *State) List() ([]*Container, error) {
   result := []*Container{}
   nebulaFilter := filters.NewArgs()
@@ -90,6 +98,7 @@ func (s *State) List() ([]*Container, error) {
   return result, nil
 }
 
+// Kill immediately ends a docker container
 func (s *State) Kill(cont *Container) error {
   // Sends SIGTERM followed by SIGKILL after a graceperio
   // Change last value from nil to give custom graceperiod
@@ -101,6 +110,7 @@ func (s *State) Kill(cont *Container) error {
   return nil
 }
 
+// Remove clears a docker container from the docker deamon
 func (s *State) Remove(cont *Container) error {
   err := s.Client.ContainerRemove(s.Context, cont.ID, types.ContainerRemoveOptions{
     RemoveVolumes: false,

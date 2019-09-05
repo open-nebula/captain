@@ -10,80 +10,58 @@ import (
   "time"
 )
 
-func (c *Captain) Dial() error {
-  dialurl, _ := url.ParseRequestURI("localhost:8080")
-
-  conn, _, err := websocket.DefaultDialer.Dial(dialurl.String(), nil)
+// Dial a socket connection to a given url. Listen for reads and writes
+func (c *Captain) Dial(dailurl *URL) error {
+  conn, _, err := websocket.DefaultDialer.Dial(dailurl.String(), nil)
   if err != nil {
     return err
   }
   done := make(chan struct{})
-  c.Write(conn, done)
-  c.Read(conn, done)
+  go c.Write(conn, done)
+  go c.Read(conn, done)
   return nil
 }
 
+// Reads configs in an infinite loop for the captain to execute
 func (c *Captain) Read(conn *websocket.Conn, done chan struct{}) {
-  go func() {
-    defer func() {
-      conn.Close()
-      close(done)
-    }()
-    // state, _ := dockercntrl.New()
-    for {
-      var config dockercntrl.Config
-      err := conn.ReadJSON(&config)
+  defer func() {
+    conn.Close()
+    close(done)
+  }()
+  for {
+    var config dockercntrl.Config
+    err := conn.ReadJSON(&config)
+    if err != nil {
+      log.Println(err)
+      return
+    }
+    c.ExecuteConfig(&config)
+  }
+}
+
+// Handles interruption cleanly. No writes done yet. 
+func (c *Captain) Write(conn *websocket.Conn, done chan struct{}) {
+  defer func() {
+    conn.Close()
+    close(c.exit)
+  }()
+  interrupt := make(chan os.Signal, 1)
+  signal.Notify(interrupt, os.Interrupt)
+  for {
+    select {
+    case <- done:
+      return
+    case <- interrupt:
+      err := conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
       if err != nil {
         log.Println(err)
         return
       }
-      RunConfig(&config)
-    }
-  }()
-}
-
-func (c *Captain) Write(conn *websocket.Conn, done chan struct{}) {
-  interrupt := make(chan os.Signal, 1)
-  signal.Notify(interrupt, os.Interrupt)
-  go func() {
-    defer func() {
-      conn.Close()
-      close(c.exit)
-    }()
-    for {
       select {
       case <- done:
-        return
-      case <- interrupt:
-        err := conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-        if err != nil {
-          log.Println(err)
-          return
-        }
-        select {
-        case <- done:
-        case <- time.After(4*time.Second):
-        }
-        return
+      case <- time.After(4*time.Second):
       }
-    }
-  }()
-}
-
-func RunConfig(config *dockercntrl.Config) {
-  state, _ := dockercntrl.New()
-  go func() {
-    container, err := state.Create(config)
-    if err != nil {
-      log.Println(err)
       return
     }
-    s, err := state.Run(container)
-    if err != nil {
-      log.Println(err)
-      return
-    }
-    log.Println("Container Output: ")
-    log.Println(s)
-  }()
+  }
 }
