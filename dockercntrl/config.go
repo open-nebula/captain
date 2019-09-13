@@ -4,6 +4,7 @@ import (
   "github.com/docker/docker/api/types/container"
   "github.com/docker/go-connections/nat"
   "github.com/phayes/freeport"
+  "github.com/google/uuid"
   "strconv"
 )
 
@@ -14,24 +15,31 @@ type Limits struct {
 
 // Config represents the configuration to build a new container.
 type Config struct {
-  Image     string    `json:"image"`
-  Cmd       []string  `json:"command"`
-  Tty       bool      `json:"tty"`
-  Name      string    `json:"name"`
-  Limits    *Limits   `json:"limits"`
-  Env       []string  `json:"env"`
-  Port      int       `json:"port"`
+  Id        *uuid.UUID  `json:"nebula_id,omitempty"`
+  Image     string      `json:"image"`
+  Cmd       []string    `json:"command"`
+  Tty       bool        `json:"tty"`
+  Name      string      `json:"name"`
+  Limits    *Limits     `json:"limits"`
+  Env       []string    `json:"env"`
+  Port      int         `json:"port"`
 }
+
+const (
+  LABLE = "nebula-id"
+)
 
 // Converts a dockercntrl.Config into the necessary docker-go-sdk configs
 func (c *Config) convert() (*container.Config, *container.HostConfig, error) {
+  var id string
+  if c.Id != nil {id = c.Id.String()}
   config := &container.Config{
     Image: c.Image,
     Cmd: c.Cmd,
     Tty: c.Tty,
     Env: c.Env,
     Labels: map[string]string{
-      "nebula-task":"", // To identify as belonging to nebula
+      LABEL: id, // To identify as belonging to nebula
     },
   }
 

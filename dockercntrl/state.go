@@ -77,7 +77,7 @@ func (s *State) Run(c *Container) (*string, error) {
 func (s *State) List() ([]*Container, error) {
   result := []*Container{}
   nebulaFilter := filters.NewArgs()
-  nebulaFilter.Add("label", "nebula-task")
+  nebulaFilter.Add("label", LABEL)
   resp, err := s.Client.ContainerList(s.Context, types.ContainerListOptions{
     All: true,
     Filters: nebulaFilter,
