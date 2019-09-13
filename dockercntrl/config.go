@@ -26,7 +26,7 @@ type Config struct {
 }
 
 const (
-  LABLE = "nebula-id"
+  LABEL = "nebula-id"
 )
 
 // Converts a dockercntrl.Config into the necessary docker-go-sdk configs
