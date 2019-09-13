@@ -1,5 +1,5 @@
 IMAGE := nebula-captain
-URL := localhost:5912
+URL := wss://88078771.ngrok.io/join
 
 # Dynamic Port Exposure
 # https://stackoverflow.com/questions/19897743/exposing-a-port-on-a-live-docker-container

@@ -4,7 +4,6 @@ package captain
 import (
   "log"
   "github.com/open-nebula/captain/dockercntrl"
-  "net/url"
 )
 
 // Captain holds state information and an exit mechanism
@@ -20,11 +19,11 @@ func New() (*Captain, error) {
   return &Captain{
     exit: make(chan struct{}),
     state: state,
-  }
+  }, nil
 }
 
 // Connects to a given spinner and runs an infinite loop
-func (c *Captain) Run(dialurl *URL) {
+func (c *Captain) Run(dialurl string) {
   err := c.Dial(dialurl)
   if err != nil {
     log.Println(err)
@@ -42,7 +41,7 @@ func (c *Captain) ExecuteConfig(config *dockercntrl.Config) {
     log.Println(err)
     return
   }
-  s, err := state.Run(container)
+  s, err := c.state.Run(container)
   if err != nil {
     log.Println(err)
     return

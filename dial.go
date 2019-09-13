@@ -3,7 +3,6 @@ package captain
 import (
   "github.com/gorilla/websocket"
   "github.com/open-nebula/captain/dockercntrl"
-  "net/url"
   "os"
   "os/signal"
   "log"
@@ -11,8 +10,8 @@ import (
 )
 
 // Dial a socket connection to a given url. Listen for reads and writes
-func (c *Captain) Dial(dailurl *URL) error {
-  conn, _, err := websocket.DefaultDialer.Dial(dailurl.String(), nil)
+func (c *Captain) Dial(dailurl string) error {
+  conn, _, err := websocket.DefaultDialer.Dial(dailurl, nil)
   if err != nil {
     return err
   }
@@ -39,7 +38,7 @@ func (c *Captain) Read(conn *websocket.Conn, done chan struct{}) {
   }
 }
 
-// Handles interruption cleanly. No writes done yet. 
+// Handles interruption cleanly. No writes done yet.
 func (c *Captain) Write(conn *websocket.Conn, done chan struct{}) {
   defer func() {
     conn.Close()
