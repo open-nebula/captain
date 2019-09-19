@@ -13,3 +13,6 @@ cache:
 script:
   - go test
   - cd build && make build
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker tag nebula-captain:latest codyperakslis/captain:latest
+  - docker push codyperakslis/captain:latest
