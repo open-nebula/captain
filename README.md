@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/open-nebula/captain.svg?branch=master)](https://travis-ci.org/open-nebula/captain)
+
 # captain
 Manage the docker containers on a single machine.
 
