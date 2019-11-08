@@ -34,17 +34,18 @@ func (c *Captain) Run(dialurl string) {
 }
 
 // Executes a given config, waiting to print output
-func (c *Captain) ExecuteConfig(config *dockercntrl.Config) {
+func (c *Captain) ExecuteConfig(config *dockercntrl.Config) string {
   container, err := c.state.Create(config)
   if err != nil {
     log.Println(err)
-    return
+    return ""
   }
   s, err := c.state.Run(container)
   if err != nil {
     log.Println(err)
-    return
+    return ""
   }
   log.Println("Container Output: ")
-  log.Println(s)
+  log.Println(*s)
+  return *s
 }

@@ -11,4 +11,4 @@ build:
 	cd .. && docker build -t $(IMAGE) -f build/Dockerfile .
 
 run: build
-	docker run -it $(IMAGE) $(URL)
+	docker run -it -v /var/run/docker.sock:/var/run/docker.sock $(IMAGE) $(URL) 

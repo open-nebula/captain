@@ -29,7 +29,7 @@ func (c *Captain) Dial(dailurl string) error {
         CPUShares: 2,
       },
     }
-    c.ExecuteConfig(&config)
+    socket.Writer() <- c.ExecuteConfig(&config)
   }, socket.Reader())
   return nil
 }
