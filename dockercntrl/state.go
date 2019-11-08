@@ -19,7 +19,7 @@ type State struct {
 // Construct a new State
 func New() (*State, error) {
   ctx := context.Background()
-  cli, err := client.NewClientWithOpts(client.WithVersion("1.40"))
+  cli, err := client.NewClientWithOpts(client.WithVersion("1.39"))
   return &State{Context: ctx, Client: cli}, err
 }
 
