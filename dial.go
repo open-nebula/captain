@@ -1,66 +1,35 @@
 package captain
 
 import (
-  "github.com/gorilla/websocket"
   "github.com/open-nebula/captain/dockercntrl"
-  "os"
-  "os/signal"
+  "github.com/open-nebula/comms"
   "log"
-  "time"
+  "github.com/google/uuid"
 )
 
 // Dial a socket connection to a given url. Listen for reads and writes
 func (c *Captain) Dial(dailurl string) error {
-  conn, _, err := websocket.DefaultDialer.Dial(dailurl, nil)
-  if err != nil {
-    return err
-  }
-  done := make(chan struct{})
-  go c.Write(conn, done)
-  go c.Read(conn, done)
-  return nil
-}
-
-// Reads configs in an infinite loop for the captain to execute
-func (c *Captain) Read(conn *websocket.Conn, done chan struct{}) {
-  defer func() {
-    conn.Close()
-    close(done)
-  }()
-  for {
-    var config dockercntrl.Config
-    err := conn.ReadJSON(&config)
-    if err != nil {
-      log.Println(err)
-      return
+  socket, err := comms.EstablishSocket(dailurl)
+  if err != nil {return err}
+  comms.Reader(func(data1 interface{}, ok bool) {
+    if !ok {return}
+    log.Println(data1)
+    data, _ := data1.(map[string]interface {})
+    log.Println(data)
+    id := uuid.MustParse(data["nebula_id"].(string))
+    config := dockercntrl.Config{
+      Id: &id,
+      Image: data["image"].(string),
+      Cmd: []string{"echo", "hello"},
+      Tty: data["tty"].(bool),
+      Name: data["name"].(string),
+      Env: []string{},
+      Port: 0,
+      Limits: &dockercntrl.Limits{
+        CPUShares: 2,
+      },
     }
     c.ExecuteConfig(&config)
-  }
-}
-
-// Handles interruption cleanly. No writes done yet.
-func (c *Captain) Write(conn *websocket.Conn, done chan struct{}) {
-  defer func() {
-    conn.Close()
-    close(c.exit)
-  }()
-  interrupt := make(chan os.Signal, 1)
-  signal.Notify(interrupt, os.Interrupt)
-  for {
-    select {
-    case <- done:
-      return
-    case <- interrupt:
-      err := conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-      if err != nil {
-        log.Println(err)
-        return
-      }
-      select {
-      case <- done:
-      case <- time.After(4*time.Second):
-      }
-      return
-    }
-  }
+  }, socket.Reader())
+  return nil
 }

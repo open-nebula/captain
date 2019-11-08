@@ -9,7 +9,9 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/gogo/protobuf v1.3.0 // indirect
 	github.com/google/uuid v1.1.1
+	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/gorilla/websocket v1.4.1
+	github.com/open-nebula/comms v0.0.0-20191108124959-31bee49f6864 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/phayes/freeport v0.0.0-20180830031419-95f893ade6f2

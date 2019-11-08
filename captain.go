@@ -8,8 +8,8 @@ import (
 
 // Captain holds state information and an exit mechanism
 type Captain struct {
-  exit    chan struct{}
   state   *dockercntrl.State
+  exit    chan interface{}
 }
 
 // Constructs a new captain
@@ -17,7 +17,6 @@ func New() (*Captain, error) {
   state, err := dockercntrl.New()
   if err != nil {return nil, err}
   return &Captain{
-    exit: make(chan struct{}),
     state: state,
   }, nil
 }
