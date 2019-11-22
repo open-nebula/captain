@@ -1,6 +1,6 @@
 IMAGE := nebula-captain
 REPO := codyperakslis/captain
-URL := wss://4fbf1747.ngrok.io/join
+URL := wss://c5c409b9.ngrok.io/join
 
 # Dynamic Port Exposure
 # https://stackoverflow.com/questions/19897743/exposing-a-port-on-a-live-docker-container
