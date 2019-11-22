@@ -20,6 +20,6 @@ func main() {
   log.Println(con.User)
   cap, err := captain.New()
   if err != nil {panic(err)}
-
+  
   cap.Run(os.Args[1])
 }

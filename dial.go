@@ -15,7 +15,7 @@ func (c *Captain) Dial(dailurl string) error {
   go c.connect(socket.Reader(), socket.Writer())
   return nil
 }
-
+// no concurrency on captain side: execute task one by one
 func (c *Captain) connect(read chan interface{}, write chan interface{}) {
   for {
     select {
