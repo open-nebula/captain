@@ -4,6 +4,7 @@ package captain
 import (
   "log"
   "github.com/open-nebula/captain/dockercntrl"
+  "github.com/open-nebula/spinner/spinresp"
 )
 
 // Captain holds state information and an exit mechanism
@@ -34,18 +35,22 @@ func (c *Captain) Run(dialurl string) {
 }
 
 // Executes a given config, waiting to print output
-func (c *Captain) ExecuteConfig(config *dockercntrl.Config) string {
+func (c *Captain) ExecuteConfig(config *dockercntrl.Config) *spinresp.Response {
   container, err := c.state.Create(config)
   if err != nil {
     log.Println(err)
-    return ""
+    return nil
   }
   s, err := c.state.Run(container)
   if err != nil {
     log.Println(err)
-    return ""
+    return nil
   }
   log.Println("Container Output: ")
   log.Println(*s)
-  return *s
+  return &spinresp.Response{
+    Id: config.Id,
+    Code: 1,
+    Data: *s,
+  }
 }
