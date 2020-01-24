@@ -3,17 +3,17 @@ package captain
 
 import (
   "log"
-  "github.com/open-nebula/captain/dockercntrl"
+  "github.com/armadanet/captain/dockercntrl"
   "github.com/open-nebula/spinner/spinresp"
 )
 
-// Captain holds state information and an exit mechanism
+// Captain holds state information and an exit mechanism.
 type Captain struct {
   state   *dockercntrl.State
   exit    chan interface{}
 }
 
-// Constructs a new captain
+// Constructs a new captain.
 func New() (*Captain, error) {
   state, err := dockercntrl.New()
   if err != nil {return nil, err}
@@ -22,7 +22,9 @@ func New() (*Captain, error) {
   }, nil
 }
 
-// Connects to a given spinner and runs an infinite loop
+// Connects to a given spinner and runs an infinite loop.
+// This loop is because the dial runs a goroutine, which
+// stops if the main thread closes.
 func (c *Captain) Run(dialurl string) {
   err := c.Dial(dialurl)
   if err != nil {
@@ -34,7 +36,9 @@ func (c *Captain) Run(dialurl string) {
   }
 }
 
-// Executes a given config, waiting to print output
+// Executes a given config, waiting to print output.
+// Should be changed to logging or a logging system.
+// Kubeedge uses Mosquito for example.
 func (c *Captain) ExecuteConfig(config *dockercntrl.Config) *spinresp.Response {
   container, err := c.state.Create(config)
   if err != nil {
@@ -50,7 +54,7 @@ func (c *Captain) ExecuteConfig(config *dockercntrl.Config) *spinresp.Response {
   log.Println(*s)
   return &spinresp.Response{
     Id: config.Id,
-    Code: 1,
+    Code: spinresp.Success,
     Data: *s,
   }
 }

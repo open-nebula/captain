@@ -1,8 +1,8 @@
 package captain
 
 import (
-  "github.com/open-nebula/captain/dockercntrl"
-  "github.com/open-nebula/comms"
+  "github.com/armadanet/captain/dockercntrl"
+  "github.com/armadenet/comms"
   "log"
 )
 
@@ -16,6 +16,8 @@ func (c *Captain) Dial(dailurl string) error {
   return nil
 }
 
+// Read in a container config from the socket and write the
+// execution output back. Should be adjusted for logging.
 func (c *Captain) connect(read chan interface{}, write chan interface{}) {
   for {
     select {
