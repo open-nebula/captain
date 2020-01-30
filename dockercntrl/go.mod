@@ -1,4 +1,4 @@
-module github.com/armadanet/captain/dockercntrl/v0
+module github.com/armadanet/captain/dockercntrl
 
 go 1.13
 

@@ -3,8 +3,8 @@ package captain
 
 import (
   "log"
-  "github.com/armadanet/captain/dockercntrl/v0"
-  "github.com/armadanet/spinner/spinresp/v0"
+  "github.com/armadanet/captain/dockercntrl"
+  "github.com/armadanet/spinner/spinresp"
 )
 
 // Captain holds state information and an exit mechanism.

@@ -1,8 +1,8 @@
 package captain
 
 import (
-  "github.com/armadanet/captain/dockercntrl/v0"
-  "github.com/armadanet/comms/v0"
+  "github.com/armadanet/captain/dockercntrl"
+  "github.com/armadanet/comms"
   "log"
 )
 
