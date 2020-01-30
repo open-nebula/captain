@@ -5,7 +5,6 @@ import (
   "golang.org/x/net/context"
   "github.com/docker/docker/api/types"
   "github.com/docker/docker/api/types/filters"
-  "github.com/docker/docker/api/types/container"
   "bytes"
   "strings"
 )
@@ -19,7 +18,7 @@ type State struct {
 // Construct a new State
 func New() (*State, error) {
   ctx := context.Background()
-  cli, err := client.NewClientWithOpts(client.WithVersion("1.39"))
+  cli, err := client.NewEnvClient()
   return &State{Context: ctx, Client: cli}, err
 }
 
@@ -53,14 +52,8 @@ func (s *State) Run(c *Container) (*string, error) {
   if err := s.Client.ContainerStart(s.Context, c.ID, types.ContainerStartOptions{}); err != nil {
 		return nil, err
 	}
-	statusCh, errCh := s.Client.ContainerWait(s.Context, c.ID, container.WaitConditionNotRunning)
-	select {
-	case err := <-errCh:
-		if err != nil {
-			return nil, err
-		}
-	case <-statusCh:
-	}
+	_, err := s.Client.ContainerWait(s.Context, c.ID)
+	if err != nil {return nil, err}
 
 	out, err := s.Client.ContainerLogs(s.Context, c.ID, types.ContainerLogsOptions{ShowStdout: true})
 	if err != nil {
