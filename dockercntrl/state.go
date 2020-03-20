@@ -5,10 +5,8 @@ import (
   "golang.org/x/net/context"
   "github.com/docker/docker/api/types"
   "github.com/docker/docker/api/types/filters"
-  "github.com/docker/docker/api/types/volume"
   "bytes"
   "strings"
-  "log"
 )
 
 // State holds the structs required to manipulate the docker daemon
