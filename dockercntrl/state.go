@@ -5,7 +5,7 @@ import (
   "golang.org/x/net/context"
   "github.com/docker/docker/api/types"
   "github.com/docker/docker/api/types/filters"
-  volumetypes "github.com/docker/docker/api/types/volume"
+  "github.com/docker/docker/api/types/volume"
   "bytes"
   "strings"
   "log"
@@ -117,7 +117,7 @@ func (s *State) Remove(cont *Container) error {
 
 // Creates a Volume
 func (s *State) VolumeCreateIdempotent(name string) error {
-  volume, err := s.Client.VolumeCreate(s.Context, volumetypes.VolumeCreateBody{
+  volume, err := s.Client.VolumeCreate(s.Context, volume.VolumeCreateBody{
     Driver: "local",
     DriverOpts: map[string]string{},
     Labels: map[string]string{
