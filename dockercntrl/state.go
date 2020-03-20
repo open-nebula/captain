@@ -124,7 +124,7 @@ func (s *State) VolumeCreateIdempotent(name string) error {
       LABEL: "default-storage",
     },
     Name: name,
-  })
+  }
   vol, err := s.Client.VolumeCreate(s.Context, v)
   log.Println(vol)
   return err
