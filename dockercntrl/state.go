@@ -121,7 +121,7 @@ func (s *State) VolumeCreateIdempotent(name string) error {
     Driver: "local",
     DriverOpts: map[string]string{},
     Labels: map[string]string{
-      LABEL: "default",
+      LABEL: "default-storage",
     },
     Name: name,
   })
