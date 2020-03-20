@@ -5,8 +5,10 @@ import (
   "golang.org/x/net/context"
   "github.com/docker/docker/api/types"
   "github.com/docker/docker/api/types/filters"
+  "github.com/docker/docker/api/types/volume"
   "bytes"
   "strings"
+  "log"
 )
 
 // State holds the structs required to manipulate the docker daemon
@@ -111,4 +113,18 @@ func (s *State) Remove(cont *Container) error {
     Force: true,
   })
   return err
+}
+
+// Creates a Volume
+func (s *State) VolumeCreateIdempotent(name string) error {
+  volume, err := s.Client.VolumeCreate(s.Context, volumetypes.VolumeCreatBody{
+    Driver: "local",
+    DriverOpts: map[string]string{},
+    Labels: map[string]string{
+      LABEL: "default",
+    },
+    Name: name,
+  })
+  log.Println(volume)
+  return error
 }
