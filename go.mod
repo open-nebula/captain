@@ -1,4 +1,4 @@
-module github.com/armadanet/captain/v0
+module github.com/armadanet/captain
 
 go 1.13
 
