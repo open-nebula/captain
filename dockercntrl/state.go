@@ -5,7 +5,7 @@ import (
   "golang.org/x/net/context"
   "github.com/docker/docker/api/types"
   "github.com/docker/docker/api/types/filters"
-  "github.com/docker/docker/api/types/volume"
+  volumetypes "github.com/docker/docker/api/types/volume"
   "bytes"
   "strings"
   "log"
@@ -126,5 +126,5 @@ func (s *State) VolumeCreateIdempotent(name string) error {
     Name: name,
   })
   log.Println(volume)
-  return error
+  return err
 }
