@@ -117,7 +117,7 @@ func (s *State) Remove(cont *Container) error {
 
 // Creates a Volume
 func (s *State) VolumeCreateIdempotent(name string) error {
-  volume, err := s.Client.VolumeCreate(s.Context, volume.VolumeCreateBody{
+  v := volume.VolumeCreateBody{
     Driver: "local",
     DriverOpts: map[string]string{},
     Labels: map[string]string{
@@ -125,6 +125,7 @@ func (s *State) VolumeCreateIdempotent(name string) error {
     },
     Name: name,
   })
-  log.Println(volume)
+  vol, err := s.Client.VolumeCreate(s.Context, v)
+  log.Println(vol)
   return err
 }
