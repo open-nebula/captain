@@ -117,6 +117,7 @@ func (s *State) Remove(cont *Container) error {
 
 // Creates a Volume
 func (s *State) VolumeCreateIdempotent(name string) error {
+  // Check if overwrites
   v := volume.VolumesCreateBody{
     Driver: "local",
     DriverOpts: map[string]string{},
