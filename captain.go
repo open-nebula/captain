@@ -32,12 +32,22 @@ func (c *Captain) Run(dialurl string) {
     return
   }
   // c.ConnectStorage()
-  id, err := c.state.GetNetwork()
+  containers, err := c.state.List()
   if err != nil {
     log.Println(err)
     return
   }
-  log.Println(id)
+  log.Println(containers[0])
+  err = c.state.NetworkConnect(containers[0])
+  if err != nil {
+    log.Println(err)
+    return
+  }
+  err = c.state.NetworkConnect(containers[0])
+  if err != nil {
+    log.Println(err)
+    return
+  }
   select {
   case <- c.exit:
   }
