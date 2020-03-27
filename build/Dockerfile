@@ -1,5 +1,6 @@
 FROM golang
 WORKDIR /app
+ADD dockercntrl /app/dockercntrl
 ADD go.mod go.sum /app/
 RUN go mod download
 ADD . /app/
