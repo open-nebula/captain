@@ -4,23 +4,24 @@ import (
   "github.com/armadanet/captain"
   "net/url"
   "log"
-  "flag"
+  "os"
+  // "flag"
 )
 
 func main() {
 
-  spinnerSelected := flag.String("spinner", "spinner", "The spinner url to connect to.")
-  selfSpin := flag.Bool("selfspin", false, "Become a spinner.")
-  flag.Parse()
+  // spinnerSelected := flag.String("spinner", "spinner", "The spinner url to connect to.")
+  // selfSpin := flag.Bool("selfspin", false, "Become a spinner.")
+  // flag.Parse()
 
-  // log.Println(os.Args[1])
-  // con, err := url.Parse(os.Args[1])
-  // if err != nil {panic(err)}
+  log.Println(os.Args[1])
+  con, err := url.Parse(os.Args[1])
+  if err != nil {panic(err)}
 
   log.Println("Creating")
-  // log.Println(con.String())
-  // log.Println(con.Scheme)
-  // log.Println(con.User)
+  log.Println(con.String())
+  log.Println(con.Scheme)
+  log.Println(con.User)
   cap, err := captain.New()
   if err != nil {panic(err)}
 

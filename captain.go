@@ -31,6 +31,7 @@ func (c *Captain) Run(dialurl string) {
     log.Println(err)
     return
   }
+  c.ConnectStorage()
   select {
   case <- c.exit:
   }
