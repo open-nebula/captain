@@ -31,23 +31,23 @@ func (c *Captain) Run(dialurl string) {
     log.Println(err)
     return
   }
-  // c.ConnectStorage()
+  c.ConnectStorage()
   containers, err := c.state.List()
   if err != nil {
     log.Println(err)
     return
   }
   log.Println(containers[0])
-  err = c.state.NetworkConnect(containers[0])
-  if err != nil {
-    log.Println(err)
-    return
-  }
-  err = c.state.NetworkConnect(containers[0])
-  if err != nil {
-    log.Println(err)
-    return
-  }
+  // err = c.state.NetworkConnect(containers[0])
+  // if err != nil {
+  //   log.Println(err)
+  //   return
+  // }
+  // err = c.state.NetworkConnect(containers[0])
+  // if err != nil {
+  //   log.Println(err)
+  //   return
+  // }
   select {
   case <- c.exit:
   }
@@ -58,6 +58,11 @@ func (c *Captain) Run(dialurl string) {
 // Kubeedge uses Mosquito for example.
 func (c *Captain) ExecuteConfig(config *dockercntrl.Config) *spinresp.Response {
   container, err := c.state.Create(config)
+  if err != nil {
+    log.Println(err)
+    return nil
+  }
+  err = c.state.NetworkConnect(container)
   if err != nil {
     log.Println(err)
     return nil

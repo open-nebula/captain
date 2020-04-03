@@ -1,4 +1,5 @@
 FROM golang
+LABEL "nebula-id"="captain"
 WORKDIR /app
 ADD dockercntrl /app/dockercntrl
 ADD go.mod go.sum /app/

@@ -7,7 +7,7 @@ import (
 func (c *Captain) ConnectStorage() {
   storageconfig := &dockercntrl.Config{
     Image: "docker.io/codyperakslis/nebula-cargo",
-    Cmd: []string{"/bin/sh", "while", ":;", "do", ":;", "done"},
+    Cmd: []string{"./main"},
     Tty: false,
     Name: "nebula-storage",
     Limits: &dockercntrl.Limits{

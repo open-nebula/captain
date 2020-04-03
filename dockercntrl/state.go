@@ -54,7 +54,11 @@ func (s *State) Run(c *Container) (*string, error) {
   if err := s.Client.ContainerStart(s.Context, c.ID, types.ContainerStartOptions{}); err != nil {
 		return nil, err
 	}
+
+  log.Println("Start wait")
 	_, err := s.Client.ContainerWait(s.Context, c.ID)
+  log.Println("End wait")
+  log.Println(err)
 	if err != nil {return nil, err}
 
 	out, err := s.Client.ContainerLogs(s.Context, c.ID, types.ContainerLogsOptions{ShowStdout: true})
@@ -72,7 +76,7 @@ func (s *State) Run(c *Container) (*string, error) {
 func (s *State) List() ([]*Container, error) {
   result := []*Container{}
   nebulaFilter := filters.NewArgs()
-  // nebulaFilter.Add("label", LABEL)
+  nebulaFilter.Add("label", "nebula-id=captain")
   resp, err := s.Client.ContainerList(s.Context, types.ContainerListOptions{
     All: true,
     Filters: nebulaFilter,
