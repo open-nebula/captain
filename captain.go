@@ -11,6 +11,7 @@ import (
 type Captain struct {
   state   *dockercntrl.State
   exit    chan interface{}
+  storage bool
 }
 
 // Constructs a new captain.
@@ -19,6 +20,7 @@ func New() (*Captain, error) {
   if err != nil {return nil, err}
   return &Captain{
     state: state,
+    storage: false,
   }, nil
 }
 
@@ -31,23 +33,6 @@ func (c *Captain) Run(dialurl string) {
     log.Println(err)
     return
   }
-  c.ConnectStorage()
-  containers, err := c.state.List()
-  if err != nil {
-    log.Println(err)
-    return
-  }
-  log.Println(containers[0])
-  // err = c.state.NetworkConnect(containers[0])
-  // if err != nil {
-  //   log.Println(err)
-  //   return
-  // }
-  // err = c.state.NetworkConnect(containers[0])
-  // if err != nil {
-  //   log.Println(err)
-  //   return
-  // }
   select {
   case <- c.exit:
   }
@@ -56,27 +41,36 @@ func (c *Captain) Run(dialurl string) {
 // Executes a given config, waiting to print output.
 // Should be changed to logging or a logging system.
 // Kubeedge uses Mosquito for example.
-func (c *Captain) ExecuteConfig(config *dockercntrl.Config) *spinresp.Response {
+func (c *Captain) ExecuteConfig(config *dockercntrl.Config, write chan interface{}) {
   container, err := c.state.Create(config)
   if err != nil {
     log.Println(err)
-    return nil
+    return
   }
-  err = c.state.NetworkConnect(container)
-  if err != nil {
-    log.Println(err)
-    return nil
+  if config.Storage {
+    if !c.storage {
+      log.Println("Establishing Storage")
+      c.storage = true
+      c.ConnectStorage()
+    }
+    err = c.state.NetworkConnect(container)
+    if err != nil {
+      log.Println(err)
+      return
+    }
   }
   s, err := c.state.Run(container)
   if err != nil {
     log.Println(err)
-    return nil
+    return
   }
   log.Println("Container Output: ")
   log.Println(*s)
-  return &spinresp.Response{
-    Id: config.Id,
-    Code: spinresp.Success,
-    Data: *s,
+  if write != nil {
+    write <- &spinresp.Response{
+      Id: config.Id,
+      Code: spinresp.Success,
+      Data: *s,
+    }
   }
 }

@@ -54,10 +54,7 @@ func (s *State) Run(c *Container) (*string, error) {
   if err := s.Client.ContainerStart(s.Context, c.ID, types.ContainerStartOptions{}); err != nil {
 		return nil, err
 	}
-
-  log.Println("Start wait")
 	_, err := s.Client.ContainerWait(s.Context, c.ID)
-  log.Println("End wait")
   log.Println(err)
 	if err != nil {return nil, err}
 
@@ -120,7 +117,7 @@ func (s *State) Remove(cont *Container) error {
 }
 
 // Creates a Volume
-func (s *State) VolumeCreateIdempotent(name string) error {
+func (s *State) VolumeCreate(name string) error {
   // Check if overwrites
   v := volume.VolumesCreateBody{
     Driver: "local",

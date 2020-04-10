@@ -14,6 +14,9 @@ func (c *Captain) ConnectStorage() {
       CPUShares: 4,
     },
     Env: []string{},
+    Storage: true,
   }
-  c.ExecuteConfig(storageconfig)
+  c.state.VolumeCreate("cargo")
+  storageconfig.AddMount("cargo")
+  go c.ExecuteConfig(storageconfig, nil)
 }

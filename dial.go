@@ -26,7 +26,7 @@ func (c *Captain) connect(read chan interface{}, write chan interface{}) {
       config, ok := data.(*dockercntrl.Config)
       if !ok {break}
       log.Println(config)
-      write <- c.ExecuteConfig(config)
+      go c.ExecuteConfig(config, write)
     }
   }
 }
