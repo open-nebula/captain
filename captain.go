@@ -3,26 +3,30 @@ package captain
 
 import (
   "log"
-  "github.com/open-nebula/captain/dockercntrl"
-  "github.com/open-nebula/spinner/spinresp"
+  "github.com/armadanet/captain/dockercntrl"
+  "github.com/armadanet/spinner/spinresp"
 )
 
-// Captain holds state information and an exit mechanism
+// Captain holds state information and an exit mechanism.
 type Captain struct {
   state   *dockercntrl.State
   exit    chan interface{}
+  storage bool
 }
 
-// Constructs a new captain
+// Constructs a new captain.
 func New() (*Captain, error) {
   state, err := dockercntrl.New()
   if err != nil {return nil, err}
   return &Captain{
     state: state,
+    storage: false,
   }, nil
 }
 
-// Connects to a given spinner and runs an infinite loop
+// Connects to a given spinner and runs an infinite loop.
+// This loop is because the dial runs a goroutine, which
+// stops if the main thread closes.
 func (c *Captain) Run(dialurl string) {
   err := c.Dial(dialurl)
   if err != nil {
@@ -34,23 +38,39 @@ func (c *Captain) Run(dialurl string) {
   }
 }
 
-// Executes a given config, waiting to print output
-func (c *Captain) ExecuteConfig(config *dockercntrl.Config) *spinresp.Response {
+// Executes a given config, waiting to print output.
+// Should be changed to logging or a logging system.
+// Kubeedge uses Mosquito for example.
+func (c *Captain) ExecuteConfig(config *dockercntrl.Config, write chan interface{}) {
   container, err := c.state.Create(config)
   if err != nil {
     log.Println(err)
-    return nil
+    return
+  }
+  if config.Storage {
+    if !c.storage {
+      log.Println("Establishing Storage")
+      c.storage = true
+      c.ConnectStorage()
+    }
+    err = c.state.NetworkConnect(container)
+    if err != nil {
+      log.Println(err)
+      return
+    }
   }
   s, err := c.state.Run(container)
   if err != nil {
     log.Println(err)
-    return nil
+    return
   }
   log.Println("Container Output: ")
   log.Println(*s)
-  return &spinresp.Response{
-    Id: config.Id,
-    Code: 1,
-    Data: *s,
+  if write != nil {
+    write <- &spinresp.Response{
+      Id: config.Id,
+      Code: spinresp.Success,
+      Data: *s,
+    }
   }
 }

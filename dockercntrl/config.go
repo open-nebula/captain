@@ -2,6 +2,7 @@ package dockercntrl
 
 import (
   "github.com/docker/docker/api/types/container"
+  "github.com/docker/docker/api/types/mount"
   "github.com/docker/go-connections/nat"
   "github.com/phayes/freeport"
   "github.com/google/uuid"
@@ -23,11 +24,23 @@ type Config struct {
   Limits    *Limits     `json:"limits"`
   Env       []string    `json:"env"`
   Port      int         `json:"port"`
+  Storage   bool        `json:"storage"`
+  mounts    []mount.Mount
 }
 
 const (
   LABEL = "nebula-id"
 )
+
+func (c *Config) AddMount(name string) {
+  c.mounts = []mount.Mount{
+    {
+      Type: mount.TypeVolume,
+      Source: name,
+      Target: "/data",
+    },
+  }
+}
 
 // Converts a dockercntrl.Config into the necessary docker-go-sdk configs
 func (c *Config) convert() (*container.Config, *container.HostConfig, error) {
@@ -47,6 +60,7 @@ func (c *Config) convert() (*container.Config, *container.HostConfig, error) {
     Resources: container.Resources{
       CPUShares: c.Limits.CPUShares,
     },
+    Mounts: c.mounts,
   }
 
   // If port is supplied, open that port on the container thru

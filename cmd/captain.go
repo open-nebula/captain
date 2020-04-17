@@ -1,14 +1,18 @@
 package main
 
 import (
-  "github.com/open-nebula/captain"
-  "os"
+  "github.com/armadanet/captain"
   "net/url"
   "log"
+  "os"
+  // "flag"
 )
 
 func main() {
-  if len(os.Args) < 2 {panic("Not enough arguments")}
+
+  // spinnerSelected := flag.String("spinner", "spinner", "The spinner url to connect to.")
+  // selfSpin := flag.Bool("selfspin", false, "Become a spinner.")
+  // flag.Parse()
 
   log.Println(os.Args[1])
   con, err := url.Parse(os.Args[1])
