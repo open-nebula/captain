@@ -9,7 +9,7 @@ func (c *Captain) ConnectStorage() {
     Image: "docker.io/codyperakslis/nebula-cargo",
     Cmd: []string{"./main"},
     Tty: false,
-    Name: "nebula-storage",
+    Name: "armada-storage",
     Limits: &dockercntrl.Limits{
       CPUShares: 4,
     },
